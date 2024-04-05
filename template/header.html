@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $(function(){
+        $("#includedContent").load("layout.html"); 
+    });
+</script>
+<body>
+<div id="includedContent"></div>
+<div class="header">
+    <nav class="navbar navbar-light" style="background-color: #fbd3ad;">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="index.html">Free-item</a>
+          <form class="d-flex">
+            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" style="border:1px solid rgb(112, 97, 97)">
+            <button class="btn" style="color:rgb(112, 97, 97); border-color: rgb(112, 97, 97);" type="submit">Search</button>
+
+          </form>
+        </div>
+      </nav>
+</div> 
+</body>
+</html>

@@ -1,0 +1,150 @@
+.content {
+    width: 100%;
+    position: relative;
+    margin: 64px 0 64px 0;
+}
+.content-op{
+    height: 200px;
+    width: 100%;
+    opacity: 0.3;
+    position:relative;
+    background-image: url('../static/image/toy4.jpg'); 
+    background-size: 100%; 
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+.content-in {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 0;
+    height: 200px;
+    width: 100%;
+    position: absolute;
+}
+.content-wrap {
+    margin: 0 auto;
+    text-align: center;
+}
+.content-text {     
+    padding: 30px;
+    font-size: 25px;
+    font-weight: bolder;
+}
+.p-1{
+    font-family: 'Gmarket Sans', sans-serif;
+    font-size: 2.2rem;
+    color: #222;
+    font-weight: 800;
+    position: relative;
+    z-index: 10;
+    margin: 0;
+}
+
+/* header 부분 */
+
+
+/* inner 시작 */
+.content-2{
+    padding: 7px 1.5px 10px;
+}
+.inner{
+    max-width: 1200px;
+    margin: 0 auto;
+}
+.__schHead {
+    display: flex;
+    justify-content: center;
+    background: #f2f2f2;
+    gap: 10px;
+    padding: 12px 50px;
+}
+.__schHead select.__inp {
+    width: 170px;
+}
+.__schHead .__inp {
+    height: 50px;
+    flex-grow: 1;
+}
+select.__inp {
+    background: #fff url(../static/image/ico-sel.svg) no-repeat right 1rem center / 1rem auto;
+    padding-right: 70px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+.__inp {
+    display: inline-block;
+    width: 100%;
+    height: 20px;
+    border: .1rem solid #d7d7d7;
+    padding-left: 10px;
+    font-size: 14px;
+    font-weight: 800;
+    background-color: #fff;
+}
+select {
+    appearance: none;
+}
+select, input, textarea, button {
+    font: inherit;
+}
+.__schHead button {
+    height: 50px;
+    width: 200px;
+    background: #333;
+    border: none;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+/* search 이미지  */
+@media (max-width:1024px) {
+    .content-2{
+        padding: 3rem 1.5rem 4rem;
+    }
+    .inner{
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    .__schHead {
+        flex-wrap: wrap;
+        justify-content: center;
+        background: #f2f2f2;
+        gap: 0.5rem;
+        padding: 1.5rem;
+    }
+    .__schHead select.__inp {
+        width: calc(50% - 0.25rem);
+    }
+    .__schHead .__inp {
+        height: 4rem;
+        flex-grow: 1;
+    }
+
+    .__schHead button {
+        height: 50px;
+        width: 100%;
+    }
+    .content-op{
+        height: 9.5rem;
+        font-size: 2.4rem;
+        background: url(../static/image/toy.jpg) no-repeat 50% 50% / cover;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+    .content-in {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        top: 0;
+        height: 9.5rem;
+        font-size: 2.4rem;
+        width: 100%;
+        
+    }
+}

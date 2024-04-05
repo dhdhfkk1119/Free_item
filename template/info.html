@@ -1,0 +1,87 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    
+</head>
+<link href="/static/info.css" rel="stylesheet" type="text/css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<link href="https://webfontworld.github.io/gmarket/GmarketSans.css" rel="stylesheet">
+<script>
+    $(function(){
+        $(".header").load("header.html"); 
+        $(".footer").load("footer.html"); 
+    });
+</script>
+<body>
+<!-- 헤더 파일 -->
+<header class="header"></header>
+<!-- 메인 -->
+<div class="content">
+    <div class="content-op">
+    </div>
+    <div class="content-in">
+        <!-- font -->
+        <div class="content-wrap">
+            <div class="content-text">
+                <p class="p-1">장난감</p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="content-2">
+    <div class="inner">
+        <form name="goSearch" method="get" class="toySearch_">
+            <input type="hidden" name="pagenumber" value="1">
+            <input type="hidden" name="domain_seq_s">
+            <input type="hidden" name="s_gb">
+            <input type="hidden" name="prd_id">
+            <input type="hidden" name="options" value="0">
+    
+                <div class="__schHead">
+                    <select id="domain_seq" name="domain_seq" class="__inp">
+                        <option value="">장난감 종류</option>
+                                                <option value="14">다문화</option>
+                                                <option value="13">장애영유아</option>
+                                                <option value="9">라돈측정기</option>
+                                                <option value="5">자동차 .동물모형</option>
+                                                <option value="8">음률</option>
+                                                <option value="1">조작놀이</option>
+                                                <option value="2">퍼즐.블럭</option>
+                                                <option value="3">신체놀이</option>
+                                                <option value="4">역할놀이</option>
+                                        </select>
+                    <select id="years_seq" name="years_seq" class="__inp">
+                        <option value="">사용연령</option>
+                                                    <option value="6">0~1세</option>
+                                                    <option value="2">0~2세</option>
+                                                    <option value="3">3~5세</option>
+                                                    <option value="4">6세 이상</option>
+                                                    <option value="5">기타</option>
+                                                    <option value="1">전체연령</option>
+                                        </select>
+                    <select id="delivery" name="delivery" class="__inp">
+                        <option value="" selected="">대여방법</option>
+                            <option value="2">전체</option>
+                            <option value="0">택배 가능 품목</option>
+                    </select>
+                    <select id="toy_status" name="toy_status" class="__inp">
+                        <option value="">대여상태</option>
+                            <option value="0">대여 가능</option>
+                            <option value="1">대여중</option>
+                            <option value="2">예약중</option><!--
+                            <option value="3" >전시중(대여불가)</option>-->
+                    </select>
+                    <input type="text" class="__inp" placeholder="장난감 이름/등록 번호" name="searchString" value="">
+                    <button type="submit">검색</button>
+                </div>
+    
+            </form>
+    </div>
+</div>
+
+<!-- 푸터 파일 -->
+<header class="footer"></header>    
+</body>
+</html>
