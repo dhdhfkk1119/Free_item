@@ -1,3 +1,14 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: inherit;
+    color: inherit;
+}
+a {
+    text-decoration: none;
+}
+
 .content {
     width: 100%;
     position: relative;
@@ -99,7 +110,129 @@ select, input, textarea, button {
     font-weight: 800;
 }
 
-/* search 이미지  */
+/* 정렬 css */
+.__topArea.line {
+    border-bottom: 0.2rem solid #333;
+    padding-bottom: 0.5rem;
+}
+.__topArea {
+    display: flex;
+    margin-bottom: 1rem;
+    justify-content: space-between;
+    align-items: center;
+}
+.__topArea .sort {
+    display: flex;
+}
+@media (min-width: 1025px){
+
+    .__mt40 {
+        margin-top: 4rem !important;
+    }
+
+}
+.__topArea .sort .active {
+    color: #fff;
+    background: #333;
+}
+
+.__topArea .sort a {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    height: 2.0rem;
+    padding: 0 0.8rem;
+    border-radius: 1.3rem;
+    font-size: 0.8rem;
+    font-weight: 1000;
+    color: #555;
+}
+
+
+
+/* 장난감 리스트 css */
+.__toyList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2.0rem 3.8rem;
+    padding-bottom: 4rem;
+    border-bottom: .1rem solid #ddd;
+}
+.__toyList .box {
+    display: block;
+    width: calc(20% - (15.2rem / 5));
+}
+.__toyList .box .img {
+    border-radius: 1rem;
+    overflow: hidden;
+}
+
+.__toyList .box .img img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    transition: 1s;
+}
+img {
+    max-width: 100%;
+}
+
+.__toyList .box .info {
+    margin-top: 0.5rem;
+}
+.box {
+    text-decoration: none;
+}
+.__toyList .box .info .subject {
+    
+    font-size: 0.8rem;
+    line-height: 1.3;
+    font-weight: 800;
+    color: #000;
+    max-height: 3.9em;
+    display: -webkit-box;
+    word-wrap: break-word;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-all;
+}
+.__toyList .box .info .state {
+    margin-top: 0.4rem;
+}
+[class*='__btn'].gray2 {
+    background: #888;
+    border-color: #888;
+    color: #fff;
+}
+.__btn6 {
+    height: 1.4rem;
+    font-size: 0.8rem;
+    width: 4rem;
+    border-radius: 0.5rem;
+    font-weight: 800;
+    line-height: 1.2;
+}
+[class*='__btn'] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: #fff;
+    border: .1rem solid #444;
+    letter-spacing: -0.03em;
+    word-spacing: -0.02em;
+    transition: 0.2s;
+}
+
+
+
+/* ----------------------------------- 반응형 css -------------------------------------  */
+
+/* search 반응형  */
 @media (max-width:1024px) {
     .content-2{
         padding: 3rem 1.5rem 4rem;
@@ -146,5 +279,37 @@ select, input, textarea, button {
         font-size: 2.4rem;
         width: 100%;
         
+    }
+}
+
+/* search 반응형  */
+@media (max-width:480px) {
+    .__schHead {
+        flex-wrap: wrap;
+        justify-content: center;
+        background: #f2f2f2;
+        padding: 1.5rem;
+        gap:1.5rem;
+    }
+}
+
+/* 정렬 반응형 */
+@media (max-width:1024px){
+    .__topArea.line {
+        padding-bottom: 0.5rem;
+    }
+    .__mt40 {
+        margin-top: 2rem !important;
+    }
+}
+
+
+@media (max-width: 1024px){
+    .__toyList .box {
+        width: calc(50% - (1rem / 2));
+    }
+    .__toyList {
+        gap: 2rem 0.5rem;
+        padding-bottom: 1.5rem;
     }
 }
