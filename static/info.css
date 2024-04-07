@@ -303,7 +303,6 @@ img {
     }
 }
 
-
 @media (max-width: 1024px){
     .__toyList .box {
         width: calc(50% - (1rem / 2));
