@@ -14,18 +14,13 @@
             }, 200);
         });
     });
-    // 파일 불러오기
-    $(function(){
-        $(".header").load("header.html"); 
-        $(".footer").load("footer.html"); 
-    });
 </script>
 <title>Insert title here</title>
 </head>
 <body>
 <div>
     <!-- 헤더 파일 -->
-    <header class="header"></header>
+    {% include 'header.html' %}
 
     <!-- 메인 컨테이너 -->
     <div class="content">
@@ -40,14 +35,14 @@
                 </div>
                 <!-- button -->
                 <div class="btn-container">
-                    <a href="info.html" class="btn-3d yellow"><span class="btn-span">장난감</span></a>
+                    <a href="/info" class="btn-3d yellow"><span class="btn-span">장난감</span></a>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- 푸터 파일 -->
-    <header class="footer"></header>
+    {% include 'footer.html' %}
 </div> 
 </body>
 </html>

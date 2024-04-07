@@ -28,7 +28,7 @@
 </div>
 <div class="content-2">
     <div class="inner">
-        <form name="goSearch" method="get" class="toySearch_" action="search">
+        <form name="goSearch" method="get" class="toySearch_" action="search" >
             <input type="hidden" name="pagenumber" value="1">
             <input type="hidden" name="domain_seq_s">
             <input type="hidden" name="s_gb">
@@ -76,17 +76,20 @@
         <div class="__topArea line __mt40">
             <div class="lef">
                 <div class="sort">
-                    <a href="javascript:options_order('0')" class="active">최신순</a>
-                    <a href="javascript:options_order('2')">조회순</a>
+                    <a href="" class="active">최신순</a>
+                    <a href="">조회순</a>
                 </div>
             </div>
             <div class="rig">
-                <div class="total">총 게시물 <span>1,780</span> 건</div>
+                <div class="total">총 게시물 <span></span> 건</div>
             </div>
         </div>
         <!-- 장난감 상품 이미지 -->
+
+        <!-- app.py 에서 데이터 값을 가지고 온다 . for 문으로 반복-->
+        
         <div class="__toyList">
-            {% for c in context %}
+            {% for c in results %}
             <a href="" class="box">
                 <div class="img"><img src="" width="180" height="180"></div>
                 <div class="info">
