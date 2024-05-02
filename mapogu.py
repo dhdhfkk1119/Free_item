@@ -52,12 +52,18 @@ try:
 
         # 다음 페이지 링크를 찾고 클릭
         try:
-            next_page_button = WebDriverWait(driver, 5).until(
-                EC.element_to_be_clickable((By.CSS_SELECTOR, 'span.select + span a'))
-            )
-            next_page_button.click()
-        except TimeoutException:
-            print("마지막 페이지에 도달했습니다.")
-            break
+            # 현재 페이지의 HTML을 가져와 BeautifulSoup 객체를 생성합니다.
+            soup = BeautifulSoup(driver.page_source, "html.parser")
+
+            # 현재 선택된 페이지 번호를 가져옵니다.
+            current_page = int(soup.select_one("span.select").text)
+
+            # 다음 페이지 번호를 계산합니다.
+            next_page = current_page + 1
+            # 다음 페이지 번호를 가진 링크를 찾습니다.
+            next_page_link = driver.find_element(By.XPATH, f"//a[contains(@onclick, 'boardPage') and contains(@onclick, '{next_page}')]")
+            next_page_link.click()
+        except NoSuchElementException:
+            print("다음 페이지 링크를 찾을 수 없습니다.")
 finally:
     driver.quit()
