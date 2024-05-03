@@ -20,7 +20,7 @@ def click_contents_images_and_get_data():
     for index, image in enumerate(images):
         # 이미지를 다시 찾아 클릭 (동적 웹페이지 대응)
         current_image = WebDriverWait(driver, 10).until(
-            EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'td.subject'))
+            EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'td.subject > a'))
         )[index]
         try:
             # 토이 클릭
@@ -86,7 +86,7 @@ def go_to_next_page():
 
         # 다음 페이지 링크 가져오기
         next_page_link = WebDriverWait(driver, 5).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, '.boardPage.clearfix span.num a[href*="page={}"]'.format(current_page_number + 1)))
+            EC.element_to_be_clickable((By.CSS_SELECTOR, '.boardPage.clearfix span a[href*="page={}"]'.format(current_page_number + 1)))
         )
         
         # 다음 페이지로 이동
