@@ -33,13 +33,13 @@ def get_data_and_move_to_next_page():
 # 클래스가 contents인 요소 안에 있는 이미지를 클릭하고 세부 정보 페이지로 이동하는 함수
 def click_contents_images_and_get_data():
     # 클래스가 contents인 요소 안에 있는 이미지 요소 가져오기
-    images = driver.find_elements(By.CSS_SELECTOR, '.doc_body ul li ')
+    images = driver.find_elements(By.CSS_SELECTOR, '.doc_body > ul > li')
     
     # 각 이미지를 클릭하고 세부 정보 페이지로 이동하기
     for index, image in enumerate(images):
         # 이미지를 다시 찾아 클릭 (동적 웹페이지 대응)
         current_image = WebDriverWait(driver, 10).until(
-            EC.presence_of_all_elements_located((By.CSS_SELECTOR, '.doc_body ul li'))
+            EC.presence_of_all_elements_located((By.CSS_SELECTOR, '.doc_body > ul > li'))
         )[index]
         try:
             # 토이 클릭
@@ -53,7 +53,7 @@ def click_contents_images_and_get_data():
 
             # 페이지가 다시 로드될 때까지 기다리기
             WebDriverWait(driver, 10).until(
-                EC.presence_of_all_elements_located((By.CSS_SELECTOR, '.doc_body ul li '))
+                EC.presence_of_all_elements_located((By.CSS_SELECTOR, '.doc_body > ul > li'))
             )
 
         except Exception as e:
@@ -62,42 +62,50 @@ def click_contents_images_and_get_data():
 
 # 세부 정보 페이지에서 이미지와 텍스트 데이터를 가져오는 함수
 def get_detail_data():
+    # 대기 시간 설정
+    wait = WebDriverWait(driver, 10)
 
-    # 현재 페이지의 소스를 이용하여 BeautifulSoup 객체 생성
-    soup = BeautifulSoup(driver.page_source, "html.parser")
-    
-    # 이름 가져오기
-    name_tag = soup.select_one(".info_title")
-    name = name_tag.text.strip() if name_tag else "Name not found"
+    try:
+        # 이미지 주소 가져오기
+        img_tag = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, ".image_area > img")))
+        img_src = img_tag.get_attribute("src") if img_tag else "Image not found"
+        full_img_src = img_src
 
-    # 나이 정보 가져오기
-    age_tag = soup.find('p',text='사용연령').find_next_sibling('p')
-    age = age_tag.text.strip() if age_tag else "Age not found"
+        # 이름 가져오기
+        name_tag = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, ".info_area .info_title")))
+        name = name_tag.text.strip() if name_tag else "Name not found"
 
-    # 대여 상태 가져오기
-    table_rows = soup.select("tbody tr")
-    for row in table_rows:
-        status_element = row.find("td", style="color:blue")
-        if status_element and '대출가능' in status_element.text.strip():
-            status = "대여가능"
-            break
-    else:
-        status = "예약중"
+        # 나이 정보 가져오기
+        age_element = wait.until(EC.presence_of_element_located((By.XPATH, "//p[contains(@class, 'txt1') and contains(text(), '사용연령')]/following-sibling::p[@class='txt2']")))
+        age = age_element.text.strip() if age_element else "Age not found"
+        if "만0세" in age:
+            age = "0개월이상"
+        elif "만1세" in age:
+            age = "12개월이상"        
+        elif "만2세" in age:
+            age = "24개월이상"        
+        elif "만3세" in age:
+            age = "36개월이상"        
+        elif "만4세" in age:
+            age = "48개월이상"
+        elif "만5세" in age:
+            age = "60개월이상"
 
+        # 대여 상태 가져오기
+        status_element = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "td[style='color:blue']")))
+        status = "대여가능" if '대출가능' in status_element.text.strip() else "예약중"
+        
+        detail_url = driver.current_url
 
-    # 이미지 주소 가져오기
-    img_tag = soup.select_one(".image_area > img")
-    img_src = img_tag.get("src") if img_tag else "Image not found"
-    full_img_src = img_src
-    detail_url = driver.current_url
+        insert_item.insert_item(conn, name, age, status, full_img_src, detail_url)
 
-    insert_item(conn,name,age,status,full_img_src,detail_url)
-
-    print("이미지 주소:", img_src)
-    print("이름:", name)
-    print("나이:", age)
-    print("대여상태:", status)
-    print("-------------------------------")
+        print("이미지 주소:", img_src)
+        print("이름:", name)
+        print("나이:", age)
+        print("대여상태:", status)
+        print("-------------------------------")
+    except Exception as e:
+        print("An error occurred while fetching details:", e)
 
 # "다음 페이지로 이동하는 함수"
 def go_to_next_page():
