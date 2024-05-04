@@ -4,6 +4,16 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from urllib.parse import urljoin
+import pymysql
+from insert_item import insert_item  # insert_item 함수를 임포트
+conn = pymysql.connect(
+    host='localhost',
+    user='root',
+    password='1234',
+    db='toy',
+    charset='utf8'
+)
+
 
 # Selenium을 사용하여 웹 드라이버 시작
 driver = webdriver.Chrome()  # 또는 사용하는 브라우저에 맞게 다른 드라이버를 선택
@@ -47,7 +57,10 @@ try:
             img_src = img_tag.get("src") if img_tag else "Image not found"
             img_url = "https://www.gskids.or.kr"
             full_img_src = urljoin(img_url, img_src)
-            
+            detail_url = driver.current_url
+
+            insert_item(conn,name,age,status,full_img_src,detail_url)
+
             print("이미지 주소:", full_img_src)
             print("이름:", name)
             print("나이:", age)
@@ -71,6 +84,6 @@ try:
 finally:
     # WebDriver 종료
     driver.quit()
-   
+    conn.close()
 
 

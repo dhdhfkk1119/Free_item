@@ -5,27 +5,39 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 from urllib.parse import urljoin
+import pymysql
+from insert_item import insert_item  # insert_item 함수를 임포트
+conn = pymysql.connect(
+    host='localhost',
+    user='root',
+    password='1234',
+    db='toy',
+    charset='utf8'
+)
 
 # 웹 드라이버 초기화
 driver = webdriver.Chrome()
 
 # 웹 페이지 로드
-driver.get("https://www.happycare.or.kr/html/sub/index_toy.php?pno=22010101&page=1")
+urls = [
+    "https://www.happycare.or.kr/html/sub/index_toy.php?pno=22010101&page=1",
+    "https://www.happycare.or.kr/html/sub/index_toy.php?pno=22020101"
+]
 
-# "다음 페이지로 이동하는 함수"
-def go_to_next_page():
-    try:
-        # "다음" 링크 찾기
-        next_page_link = WebDriverWait(driver, 2).until(
-            EC.presence_of_element_located((By.XPATH, '//span[@class="select"]/following-sibling::span'))
-        )
-        # 다음 페이지로 이동
-        next_page_link.click()
-
-        return True
-    except:
-        return False
-
+# 한 페이지에 대한 정보를 얻고 다음 페이지로 이동하는 메인 함수
+def get_data_and_move_to_next_page():
+    for url in urls:
+        try:
+            driver.get(url)
+            while True:
+                click_contents_images_and_get_data()  # 현재 페이지의 정보 가져오기
+                if not go_to_next_page():  # 다음 페이지로 이동
+                    break  # 다음 페이지로 이동할 수 없으면 종료
+        except Exception as e:
+            print("An error occurred:", e)
+        finally:
+            # 현재 URL에서의 정보 수집이 완료되면 다음 URL로 이동
+            continue
 
 # 클래스가 contents인 요소 안에 있는 이미지를 클릭하고 세부 정보 페이지로 이동하는 함수
 def click_contents_images_and_get_data():
@@ -84,6 +96,9 @@ def get_detail_data():
     img_src = img_tag.get("src") if img_tag else "Image not found"
     img_url = "https://www.happycare.or.kr/"
     full_img_src = urljoin(img_url, img_src)
+    detail_url = driver.current_url
+
+    insert_item(conn,name,age,status,full_img_src,detail_url)
 
     print("이미지 주소:", full_img_src)
     print("이름:", name)
@@ -91,17 +106,23 @@ def get_detail_data():
     print("대여상태:", status)
     print("-------------------------------")
 
-# 한 페이지에 대한 정보를 얻고 다음 페이지로 이동하는 메인 함수
-def get_data_and_move_to_next_page():
+# "다음 페이지로 이동하는 함수"
+def go_to_next_page():
     try:
-        while True:
-            click_contents_images_and_get_data()  # 현재 페이지의 정보 가져오기
-            if not go_to_next_page():  # 다음 페이지로 이동
-                break  # 다음 페이지로 이동할 수 없으면 종료
-    finally:
-        # 웹 드라이버 종료
-        print("마지막페이지 입니다.")
-        driver.quit()
+        # "다음" 링크 찾기
+        next_page_link = WebDriverWait(driver, 2).until(
+            EC.presence_of_element_located((By.XPATH, '//span[@class="select"]/following-sibling::span'))
+        )
+        # 다음 페이지로 이동
+        next_page_link.click()
+
+        return True
+    except:
+        return False
 
 # 메인 함수 호출
 get_data_and_move_to_next_page()
+
+# 웹 드라이버 종료
+driver.quit()
+conn.close()

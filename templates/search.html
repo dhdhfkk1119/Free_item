@@ -34,43 +34,41 @@
             <input type="hidden" name="s_gb">
             <input type="hidden" name="prd_id">
             <input type="hidden" name="options" value="0">
-    
-                <div class="__schHead">
-                    <select id="domain_seq" name="domain_seq" class="__inp">
-                        <option value="">장난감 종류</option>
-                                                <option value="14">다문화</option>
-                                                <option value="13">장애영유아</option>
-                                                <option value="9">라돈측정기</option>
-                                                <option value="5">자동차 .동물모형</option>
-                                                <option value="8">음률</option>
-                                                <option value="1">조작놀이</option>
-                                                <option value="2">퍼즐.블럭</option>
-                                                <option value="3">신체놀이</option>
-                                                <option value="4">역할놀이</option>
-                                        </select>
-                    <select id="years_seq" name="years_seq" class="__inp">
-                        <option value="">사용연령</option>
-                                                    <option value="6">0~1세</option>
-                                                    <option value="2">0~2세</option>
-                                                    <option value="3">3~5세</option>
-                                                    <option value="4">6세 이상</option>
-                                                    <option value="5">기타</option>
-                                                    <option value="1">전체연령</option>
-                                        </select>
-                    <select id="delivery" name="delivery" class="__inp">
-                        <option value="" selected="">이미지 클릭</option>
-                    </select>
-                    <select id="toy_status" name="toy_status" class="__inp">
-                        <option value="">대여상태</option>
-                            <option value="0">대여 가능</option>
-                            <option value="1">대여중</option>
-                            <option value="2">예약중</option><!--
-                            <option value="3" >전시중(대여불가)</option>-->
-                    </select>
-                    <input type="text" class="__inp" placeholder="장난감 이름/등록 번호" name="searchString" value="">
-                    <button type="submit">검색</button>
-                </div>
-    
+
+            <div class="__schHead">
+                <select id="domain_seq" name="domain_seq" class="__inp">
+                    <option value="">장난감 종류</option>
+                                            <option value="다문화">다문화</option>
+                                            <option value="장애영유아">장애영유아</option>
+                                            <option value="라돈측정기">라돈측정기</option>
+                                            <option value="자동차">자동차 .동물모형</option>
+                                            <option value="음률">음률</option>
+                                            <option value="조작">조작놀이</option>
+                                            <option value="퍼즐">퍼즐.블럭</option>
+                                            <option value="신체">신체놀이</option>
+                                            <option value="역할">역할놀이</option>
+                                    </select>
+                <select id="years_seq" name="years_seq" class="__inp">
+                    <option value="">사용연령</option>
+                                                <option value="12개월">0~1세</option>
+                                                <option value="24개월">0~2세</option>
+                                                <option value="3세이상">3~5세</option>
+                                                <option value="6세이상">6세 이상</option>
+                                                <option value="기타">기타</option>
+                                                <option value="전체연령">전체연령</option>
+                                    </select>
+                <select id="delivery" name="delivery" class="__inp">
+                    <option value="" selected="">이미지 클릭</option>
+                </select>
+                <select id="toy_status" name="toy_status" class="__inp">
+                    <option value="">대여상태</option>
+                        <option value="대여상태">대여 가능</option>
+                        <option value="예약중">예약중</option>
+                </select>
+                <input type="text" class="__inp" placeholder="장난감 이름/등록 번호" name="searchString" value="">
+                <button type="submit">검색</button>
+            </div>
+
         </form>
         <!-- 장난감 정렬  -->
         <div class="__topArea line __mt40">
@@ -81,23 +79,27 @@
                 </div>
             </div>
             <div class="rig">
-                <div class="total">총 게시물 <span></span> 건</div>
+                <div class="total">총 게시물 <span>{{ total_posts }}</span> 건</div>
             </div>
         </div>
         <!-- 장난감 상품 이미지 -->
-
-        <!-- app.py 에서 데이터 값을 가지고 온다 . for 문으로 반복-->
-        
         <div class="__toyList">
-            {% for c in results %}
-            <a href="" class="box">
-                <div class="img"><img src="" width="180" height="180"></div>
+            {% if result %}
+            {% for item in results %}
+            <a href="{{ item['detail_url'] }}" class="box">
+                <div class="img"><img src="{{ item['img_src'] }}" width="180" height="180"></div>
                 <div class="info">
-                    <div class="subject">{{ c.searchString }}</div>
-                    <div class="state"><span class="__btn6 gray2">{{ c.toy_status }}</span></div>
+                    <div>
+                        <span class="subject">{{ item['name'] }}</span>
+                        <span class="age">{{ item['age'] }}</span>
+                    </div>
+                    <div class="state"><span class="__btn6 gray2">{{ item['status'] }}</span></div>
                 </div>
             </a>
-            {% endfor %}   <!-- for문 end -->          
+            {% endfor %}
+            {% else %}
+            <p>검색 결과가 없습니다.</p>
+            {% endif %}
         </div>
     </div>
 </div>
