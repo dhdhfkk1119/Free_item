@@ -4,15 +4,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
-import pymysql
-from insert_item import insert_item  # insert_item 함수를 임포트
-conn = pymysql.connect(
-    host='localhost',
-    user='root',
-    password='1234',
-    db='toy',
-    charset='utf8'
-)
+import insert_item
+# DB 연결 가져오기
+conn = insert_item.get_db_connection()
 
 # 웹 드라이버 초기화
 driver = webdriver.Chrome()
@@ -90,8 +84,28 @@ def get_detail_data():
 
     # 나이 정보 가져오기
     age_tag = soup.select_one(".book_detail.clearfix > ul > li > span:contains('연령')")
-    age = age_tag.next_sibling.strip() if age_tag else "Age not found"
+    if age_tag:
+        age_text = age_tag.next_sibling.strip()        
+        age_text = ''.join(filter(str.isdigit, age_text))  # 문자열에서 숫자만 추출
+        age_value = int(age_text) if age_text else 0  # 숫자로 변환, 없으면 0
 
+        # 연령 변환 조건문
+        if age_value < 0:
+            age = "0개월이상"
+        elif age_value < 6:
+            age = "6개월이상"
+        elif age_value <= 12:
+            age = "12개월이상"
+        elif age_value <= 18:
+            age = "18개월이상"
+        elif age_value <= 24:
+            age = "24개월이상"
+        elif age_value <= 36:
+            age = "36개월이상"
+        elif age_value <= 48:
+            age = "48개월이상"
+        else:
+            age = "전체연령"
     # 대여 상태 가져오기
     status_tags = soup.select(".book_possible")
     status = "대여가능" if any(tag.text.strip() == "대여가능" for tag in status_tags) else "대여중"

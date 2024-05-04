@@ -5,15 +5,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import urllib.parse
-import pymysql
-from insert_item import insert_item  # insert_item 함수를 임포트
-conn = pymysql.connect(
-    host='localhost',
-    user='root',
-    password='1234',
-    db='toy',
-    charset='utf8'
-)
+import insert_item
+# DB 연결 가져오기
+conn = insert_item.get_db_connection()
 
 # Selenium을 사용하여 웹 드라이버 시작
 driver = webdriver.Chrome()  # 또는 사용하는 브라우저에 맞게 다른 드라이버를 선택
@@ -59,7 +53,7 @@ try:
                     available = next_sibling_td.get_text().strip() if next_sibling_td else ""
                     status = "대여가능" if available != "0" else "예약중"
                 else:
-                    status = "대여 정보 없음"
+                    status = "예약중"
 
                 # 이미지 주소 가져오기
                 img_tag = p.select_one("dl.toySR_list > dt > img")
@@ -67,7 +61,7 @@ try:
                 full_img_src = urllib.parse.urljoin("https://www.gncare.go.kr", img_src)
                 detail_url = driver.current_url
 
-                insert_item(conn,name, age, status, full_img_src,detail_url)
+                insert_item.insert_item(conn,name, age, status, full_img_src,detail_url)
 
 
                 print("상세페이지 주소:", detail_url)

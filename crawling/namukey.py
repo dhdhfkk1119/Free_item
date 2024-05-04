@@ -5,15 +5,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 from urllib.parse import urljoin
-import pymysql
-from insert_item import insert_item  # insert_item 함수를 임포트
-conn = pymysql.connect(
-    host='localhost',
-    user='root',
-    password='1234',
-    db='toy',
-    charset='utf8'
-)
+import insert_item
+# DB 연결 가져오기
+conn = insert_item.get_db_connection()
 
 # 웹 드라이버 초기화
 driver = webdriver.Chrome()
@@ -39,13 +33,13 @@ def get_data_and_move_to_next_page():
 # 클래스가 contents인 요소 안에 있는 이미지를 클릭하고 세부 정보 페이지로 이동하는 함수
 def click_contents_images_and_get_data():
     # 클래스가 contents인 요소 안에 있는 이미지 요소 가져오기
-    images = driver.find_elements(By.CSS_SELECTOR, '.doc_body > ul > li')
+    images = driver.find_elements(By.CSS_SELECTOR, '.doc_body ul li ')
     
     # 각 이미지를 클릭하고 세부 정보 페이지로 이동하기
     for index, image in enumerate(images):
         # 이미지를 다시 찾아 클릭 (동적 웹페이지 대응)
         current_image = WebDriverWait(driver, 10).until(
-            EC.presence_of_all_elements_located((By.CSS_SELECTOR, '.doc_body > ul > li'))
+            EC.presence_of_all_elements_located((By.CSS_SELECTOR, '.doc_body ul li'))
         )[index]
         try:
             # 토이 클릭
@@ -59,7 +53,7 @@ def click_contents_images_and_get_data():
 
             # 페이지가 다시 로드될 때까지 기다리기
             WebDriverWait(driver, 10).until(
-                EC.presence_of_all_elements_located((By.CSS_SELECTOR, '.doc_body > ul > li'))
+                EC.presence_of_all_elements_located((By.CSS_SELECTOR, '.doc_body ul li '))
             )
 
         except Exception as e:
@@ -81,7 +75,6 @@ def get_detail_data():
     age = age_tag.text.strip() if age_tag else "Age not found"
 
     # 대여 상태 가져오기
-    status_text = ""
     table_rows = soup.select("tbody tr")
     for row in table_rows:
         status_element = row.find("td", style="color:blue")

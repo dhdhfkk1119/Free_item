@@ -5,15 +5,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import urllib.parse
-import pymysql
-from insert_item import insert_item  # insert_item 함수를 임포트
-conn = pymysql.connect(
-    host='localhost',
-    user='root',
-    password='1234',
-    db='toy',
-    charset='utf8'
-)
+import insert_item
+# DB 연결 가져오기
+conn = insert_item.get_db_connection()
 
 # Selenium을 사용하여 웹 드라이버 시작
 driver = webdriver.Chrome()  # 또는 사용하는 브라우저에 맞게 다른 드라이버를 선택
@@ -45,10 +39,17 @@ try:
 
                 # 나이 정보 가져오기
                 age_tag = p.select_one("span.use_year")
-                age = age_tag.text.strip() if age_tag else "Free"
-
+                age = age_tag.text.strip() if age_tag else "전체연령"
+                if "0~2세 추천" in age:
+                    age = "12개월이상"
+                elif "3~5세 추천" in age:
+                    age = "36개월이상"
+                elif "6세이상" in age:
+                    age = "60개월이상"    
+                else :
+                    age = "전체연령"
                 # 대여 상태 가져오기
-                status = "대여 정보 없음"
+                status = "상태불가"
 
                 # 이미지 주소 가져오기
                 img_tag = p.select_one("li.pd_item > a > img")
@@ -56,7 +57,7 @@ try:
                 full_img_src = urllib.parse.urljoin("https://www.toyplaza.or.kr", img_src)
                 detail_url = "https://www.toyplaza.or.kr/main/main.php?categoryid=03&menuid=01&groupid=00"
 
-                insert_item(conn,name,age,status,full_img_src,detail_url)
+                insert_item.insert_item(conn,name,age,status,full_img_src,detail_url)
 
                 print("이미지 주소:", full_img_src)
                 print("이름:", name)

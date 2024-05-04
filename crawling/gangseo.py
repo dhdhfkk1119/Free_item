@@ -4,22 +4,17 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from urllib.parse import urljoin
-import pymysql
-from insert_item import insert_item  # insert_item 함수를 임포트
-conn = pymysql.connect(
-    host='localhost',
-    user='root',
-    password='1234',
-    db='toy',
-    charset='utf8'
-)
-
+import insert_item
+# DB 연결 가져오기
+conn = insert_item.get_db_connection()
 
 # Selenium을 사용하여 웹 드라이버 시작
 driver = webdriver.Chrome()  # 또는 사용하는 브라우저에 맞게 다른 드라이버를 선택
 
 # 첫 번째 페이지의 URL
-url = "https://www.gskids.or.kr/gsplay/toy/toy-list"
+url = ["https://www.gskids.or.kr/gsplay/toy/toy-list",
+       "https://www.gskids.or.kr/gsplay/toy/toy2-list",
+       "https://www.gskids.or.kr/gsplay/toy/toy3-list"]
 
 # 페이지 이동
 driver.get(url)
@@ -40,6 +35,10 @@ try:
             # 나이 정보 가져오기
             age_tag = p.select_one("td:contains('이상')")
             age = age_tag.text.strip() if age_tag else "Age not found"
+            if "만 4세" in age:
+                age = "48개월이상"
+            elif "만 5세" in age:
+                age = "60개월이상"        
 
             # 대여 상태 태그 가져오기
             status_tag_line = p.select_one(".entry-tag.tag01")
@@ -59,7 +58,7 @@ try:
             full_img_src = urljoin(img_url, img_src)
             detail_url = driver.current_url
 
-            insert_item(conn,name,age,status,full_img_src,detail_url)
+            insert_item.insert_item(conn,name,age,status,full_img_src,detail_url)
 
             print("이미지 주소:", full_img_src)
             print("이름:", name)

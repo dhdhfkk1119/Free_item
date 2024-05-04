@@ -5,15 +5,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import urllib.parse
-import pymysql
-from insert_item import insert_item  # insert_item 함수를 임포트
-conn = pymysql.connect(
-    host='localhost',
-    user='root',
-    password='1234',
-    db='toy',
-    charset='utf8'
-)
+import insert_item
+# DB 연결 가져오기
+conn = insert_item.get_db_connection()
 
 # Selenium을 사용하여 웹 드라이버 시작
 driver = webdriver.Chrome()  # 또는 사용하는 브라우저에 맞게 다른 드라이버를 선택
@@ -46,6 +40,18 @@ try:
                 # 나이 정보 가져오기
                 age_tag = p.select_one("span.small-txt")
                 age = age_tag.text.strip() if age_tag else "Age not found"
+                if "0세이상" in age:
+                    age = "0개월이상"
+                elif "1세이상" in age:
+                    age = "12개월이상"
+                elif "2세이상" in age:
+                    age = "24개월이상"
+                elif "3세이상" in age:
+                    age = "36개월이상"                                        
+                elif "4세이상" in age:
+                    age = "48개월이상"
+                elif "5세이상" in age:
+                    age = "60개월이상"                    
 
                 # 대여 상태 가져오기
                 status_tag_line = p.select_one("strong.card-btn.line")
@@ -53,14 +59,19 @@ try:
 
                 status_tag = status_tag_line if status_tag_line else status_tag_available
                 status = status_tag.text.strip() if status_tag else "Status not found"
+                if "대여가능" in status:
+                    status = "대여가능"
+                else : 
+                    status = "예약중"
 
+                    
                 # 이미지 주소 가져오기
                 img_tag = p.select_one("span.img-box > img")
                 img_src = img_tag.get("src") if img_tag else "Image not found"
                 full_img_src = img_src
                 detail_url = driver.current_url
 
-                insert_item(conn,name, age, status, full_img_src,detail_url)
+                insert_item.insert_item(conn,name, age, status, full_img_src,detail_url)
 
                 print("상세 주소:", detail_url)
                 print("이미지 주소:", img_src)

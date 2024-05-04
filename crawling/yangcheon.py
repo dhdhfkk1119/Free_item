@@ -5,15 +5,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 from urllib.parse import urljoin
-import pymysql
-from insert_item import insert_item  # insert_item 함수를 임포트
-conn = pymysql.connect(
-    host='localhost',
-    user='root',
-    password='1234',
-    db='toy',
-    charset='utf8'
-)
+import insert_item
+# DB 연결 가져오기
+conn = insert_item.get_db_connection()
 
 # 웹 드라이버 초기화
 driver = webdriver.Chrome()
@@ -83,6 +77,16 @@ def get_detail_data(detail_url):
 
     age_tag = soup.find('th', text='연령').find_next_sibling('td')
     age = age_tag.text.strip() if age_tag else "Age not found"
+    if "0세부터" in age:
+        age = "0개월이상"
+    elif "1세부터" in age:
+        age = "12개월이상"        
+    elif "2세부터" in age:
+        age = "24개월이상"        
+    elif "3세이상" in age:
+        age = "36개월이상"       
+    elif "부모" in age:
+        age = "전체연령"     
 
     status_tags = soup.find('th', text='현재상태').find_next_sibling('td')
     status = status_tags.text.strip() if status_tags else "Status not found"
@@ -92,7 +96,7 @@ def get_detail_data(detail_url):
     img_src = img_tag.get("src") if img_tag else "Image not found"
     full_img_src = urljoin("https://www.ychccic.or.kr", img_src)
 
-    insert_item(conn,name,age,status,full_img_src,detail_url)
+    insert_item.insert_item(conn,name,age,status,full_img_src,detail_url)
 
     # 출력 또는 데이터베이스 저장
     print("List Page URL:", detail_url)

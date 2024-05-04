@@ -5,15 +5,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 from urllib.parse import urljoin
-import pymysql
-from insert_item import insert_item  # insert_item 함수를 임포트
-conn = pymysql.connect(
-    host='localhost',
-    user='root',
-    password='1234',
-    db='toy',
-    charset='utf8'
-)
+import insert_item
+# DB 연결 가져오기
+conn = insert_item.get_db_connection()
 
 # 웹 드라이버 초기화
 driver = webdriver.Chrome()
@@ -98,11 +92,13 @@ def get_detail_data():
 
     # 나이 정보 가져오기
     age_tag = soup.select_one("div.tvi_txt > ul > li:contains('전체')")
-    age = age_tag.text.strip() if age_tag else "Age not found"
-
+    age = age_tag.text.strip() if age_tag else "전체연령"
+    if "전체" in age:
+        age = "전체연령"
+        
     # 대여 상태 가져오기
     status_tags = soup.select("div.tvi_txt > dl > dd > span.con")
-    status = "대여중" if any(tag.text.strip() == "0" for tag in status_tags) else "대여가능"
+    status = "예약중" if any(tag.text.strip() == "0" for tag in status_tags) else "대여가능"
     
     # 이미지 주소 가져오기
     img_tag = soup.select_one("div.tvi_img > img")
@@ -111,7 +107,7 @@ def get_detail_data():
     full_img_src = urljoin(img_url, img_src)
     detail_url = driver.current_url
 
-    insert_item(conn,name, age, status, full_img_src,detail_url)
+    insert_item.insert_item(conn,name, age, status, full_img_src,detail_url)
 
     print("이미지 주소:", full_img_src)
     print("이름:", name)
