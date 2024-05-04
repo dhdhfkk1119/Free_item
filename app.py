@@ -1,77 +1,82 @@
-from flask import Flask, request
-from flask import render_template
-from flask_pymongo import PyMongo
-from pymongo import MongoClient
+from flask import Flask, render_template, request
+import pymysql
+import pymysql.cursors
 
 app = Flask(__name__)
 
-mongo = PyMongo()
+def get_db_connection():
+    conn = pymysql.connect(
+        host='localhost',
+        user='root',
+        password='1234',
+        db='toy',
+        charset='utf8'
+    )
+    return conn
 
-client = MongoClient('mongodb://localhost', 27017)   # 로컬환경에서 mongo db 연결
-
-# neuruWeb = 스키마 이름을 Freeitem으로 만듬
-db = client.Freeitem
-
-# index 페이지 보여주기
 @app.route('/')
 def index():
     return render_template('index.html')
 
-# info 페이지 보여주기
-@app.route('/info',methods=["GET"])
+@app.route('/info', methods=["GET"])
 def info():
-    context = db.list.find()
-    return render_template('info.html',context=context)
+    conn = get_db_connection()
+    curs = conn.cursor(pymysql.cursors.DictCursor)
 
-# search 기능
-@app.route('/search', methods=["GET"])
+    # 게시물의 총 수를 조회
+    curs.execute("SELECT COUNT(*) AS total FROM item")
+    total_posts = curs.fetchone()['total']
+
+    # 게시물 데이터 조회
+    curs.execute("SELECT idx, name, age, status, img_src, detail_url FROM item")
+    items = curs.fetchall()
+
+    curs.close()
+    conn.close()
+
+    return render_template('info.html', items=items, total_posts=total_posts)
+
+@app.route('/search',methods=["GET"])
 def search():
-    # GET 요청으로부터 검색어 및 기타 파라미터 가져오기
+    # 검색 파라미터 받기
     domain_seq = request.args.get('domain_seq')
     years_seq = request.args.get('years_seq')
     toy_status = request.args.get('toy_status')
     searchString = request.args.get('searchString')
 
-    # MongoDB 쿼리 작성
-    query = {}
+    #데이터베이스 연결
+    conn = get_db_connection()
+    curs = conn.cursor(pymysql.cursors.DictCursor)
 
+    # 기본 검색 쿼리
+    query = "SELECT idx, name, age, status, img_src, detail_url FROM item WHERE 1=1"
+    
+    # 조건 추가
+    conditions = []
     if domain_seq:
-        query['domain_seq'] = domain_seq
+        conditions.append("domain_seq = %s")
     if years_seq:
-        query['years_seq'] = years_seq
+        conditions.append("years_seq = %s")
     if toy_status:
-        query['toy_status'] = toy_status
+        conditions.append("status = %s")
     if searchString:
-        query['searchString'] = searchString
+        conditions.append("(name LIKE %s OR idx = %s)")
 
-    # MongoDB에서 검색 결과 가져오기
-    results = db.list.find(query)
+    # 쿼리에 조건 추가
+    if conditions:
+        query += ' AND ' + ' AND '.join(conditions)
+
+    # 실행할 쿼리 파라미터
+    params = [param for param in (domain_seq, years_seq, toy_status, f"%{searchString}%", searchString) if param]
+
+    # 쿼리 실행
+    curs.execute(query, params)
+    results = curs.fetchall()
+
+    curs.close()
+    conn.close()
 
     return render_template('search.html', results=results)
-    
 
-# db write 부분 write.html에서 post로 보낸 데이터 받아서 db에 저장
-@app.route('/write', methods=["GET", "POST"])
-def board_write():
-   if request.method == "POST":
-      domain_seq = request.form.get('domain_seq')
-      years_seq = request.form.get('years_seq')
-      toy_status = request.form.get('toy_status')
-      searchString = request.form.get('searchString')
-      print(domain_seq, years_seq, toy_status,searchString)
-        
-      doc = {
-         "domain_seq" : domain_seq,
-         "years_seq": years_seq,
-         "toy_status": toy_status,
-         "searchString": searchString,
-        }
-    # db = neuru web 이라는 스키마임, 스키마 아래에 board라는 컬랙션을 생성후 데이터를 넣음
-      db.list.insert_one(doc)
-
-      return render_template("write.html")
-   else:
-      return render_template("write.html")
-       
 if __name__ == '__main__':
-    app.run('0.0.0.0', port=5000, debug=True)
+    app.run(debug=True)
