@@ -1,6 +1,7 @@
-from flask import Flask, render_template, request
-import pymysql
+from flask import Flask, render_template, request, redirect, url_for
 import pymysql.cursors
+import pymysql
+from flask import jsonify
 
 app = Flask(__name__)
 
@@ -20,63 +21,70 @@ def index():
 
 @app.route('/info', methods=["GET"])
 def info():
+    # 현재 페이지 및 페이지당 상품 수
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 36, type=int)  # 기본값 25
+
     conn = get_db_connection()
     curs = conn.cursor(pymysql.cursors.DictCursor)
 
-    # 게시물의 총 수를 조회
+    # 전체 게시물 수 조회
     curs.execute("SELECT COUNT(*) AS total FROM item")
     total_posts = curs.fetchone()['total']
 
-    # 게시물 데이터 조회
-    curs.execute("SELECT idx, name, age, status, img_src, detail_url FROM item")
+    # 페이지당 게시물 조회
+    curs.execute("SELECT idx, name, age, status, img_src, detail_url FROM item LIMIT %s OFFSET %s", (per_page, (page - 1) * per_page))
     items = curs.fetchall()
 
     curs.close()
     conn.close()
 
-    return render_template('info.html', items=items, total_posts=total_posts)
+    return render_template('info.html', items=items, total_posts=total_posts, page=page, per_page=per_page)
 
-@app.route('/search',methods=["GET"])
-def search():
-    # 검색 파라미터 받기
-    domain_seq = request.args.get('domain_seq')
-    years_seq = request.args.get('years_seq')
-    toy_status = request.args.get('toy_status')
-    searchString = request.args.get('searchString')
+@app.route('/increase_view_count', methods=["POST"])
+def increase_view_count():
+    if request.method == 'POST':
+        item_id = request.form['item_id']
 
-    #데이터베이스 연결
-    conn = get_db_connection()
-    curs = conn.cursor(pymysql.cursors.DictCursor)
+        conn = get_db_connection()
+        curs = conn.cursor()
 
-    # 기본 검색 쿼리
-    query = "SELECT idx, name, age, status, img_src, detail_url FROM item WHERE 1=1"
-    
-    # 조건 추가
-    conditions = []
-    if domain_seq:
-        conditions.append("domain_seq = %s")
-    if years_seq:
-        conditions.append("years_seq = %s")
-    if toy_status:
-        conditions.append("status = %s")
-    if searchString:
-        conditions.append("(name LIKE %s OR idx = %s)")
+        # 상품의 조회수 증가 처리
+        curs.execute("UPDATE item SET views = views + 1 WHERE idx = %s", (item_id,))
+        conn.commit()
 
-    # 쿼리에 조건 추가
-    if conditions:
-        query += ' AND ' + ' AND '.join(conditions)
+        curs.close()
+        conn.close()
 
-    # 실행할 쿼리 파라미터
-    params = [param for param in (domain_seq, years_seq, toy_status, f"%{searchString}%", searchString) if param]
+        return jsonify({'message': 'View count increased successfully'}), 200
+    else:
+        return jsonify({'error': 'Method not allowed'}), 405
 
-    # 쿼리 실행
-    curs.execute(query, params)
-    results = curs.fetchall()
+@app.route('/sort_items', methods=["POST"])
+def sort_items():
+    if request.method == 'POST':
+        sort_by = request.form['sort_by']
 
-    curs.close()
-    conn.close()
+        conn = get_db_connection()
+        curs = conn.cursor(pymysql.cursors.DictCursor)
 
-    return render_template('search.html', results=results)
+        if sort_by == 'view_count':
+            # 조회수가 높은 순으로 상품 조회
+            curs.execute("SELECT idx, name, age, status, img_src, detail_url FROM item ORDER BY views DESC")
+        else:
+            # 기본 정렬 (원하는 방식으로 변경)
+            curs.execute("SELECT idx, name, age, status, img_src, detail_url FROM item ORDER BY created_at DESC")
+
+        items = curs.fetchall()
+
+        curs.close()
+        conn.close()
+
+        # 정렬된 결과를 JSON 형식으로 반환
+        return jsonify({'items': items}), 200
+    else:
+        return jsonify({'error': 'Method not allowed'}), 405
+
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -34,21 +34,7 @@
             <input type="hidden" name="s_gb">
             <input type="hidden" name="prd_id">
             <input type="hidden" name="options" value="0">
-    
-
             <div class="__schHead">
-                <select id="domain_seq" name="domain_seq" class="__inp">
-                    <option value="">장난감 종류</option>
-                    <option value="다문화">다문화</option>
-                    <option value="장애영유아">장애영유아</option>
-                    <option value="라돈측정기">라돈측정기</option>
-                    <option value="자동차">자동차 .동물모형</option>
-                    <option value="음률">음률</option>
-                    <option value="조작">조작놀이</option>
-                    <option value="퍼즐">퍼즐.블럭</option>
-                    <option value="신체">신체놀이</option>
-                    <option value="역할">역할놀이</option>
-                </select>
                 <select id="years_seq" name="years_seq" class="__inp">
                     <option value="">사용연령</option>
                     <option value="0~1세">0개월 이상</option>
@@ -73,9 +59,9 @@
         <div class="__topArea line __mt40">
             <div class="lef">
                 <div class="sort">
-                    <a href="javascript:options_order('0')" class="active">최신순</a>
-                    <a href="javascript:options_order('2')">조회순</a>
-                </div>
+                    <a href="#" id="defaultSort" class="active" onclick="changeActive('defaultSort'); sortByDefault();">업데이트순</a>
+                    <a href="#" id="viewCountSort" onclick="changeActive('viewCountSort'); sortByViewCount();">조회순</a>
+                </div>                          
             </div>
             <div class="rig">
                 <div class="total">총 게시물 <span>{{ total_posts }}</span> 건</div>
@@ -84,24 +70,106 @@
         <!-- 장난감 상품 이미지 -->
         <div class="__toyList">
             {% for item in items %}
-            <a href="{{ item['detail_url'] }}" class="box">
-                <div class="img"><img src="{{ item['img_src'] }}" width="180" height="180"></div>
+            <a href="{{ item['detail_url'] }}" class="box" onclick="increaseViewCount('{{ item['idx'] }}')">
+                <div class="img"><img src="{{ item['img_src'] }}" width="150" height="150"></div>
                 <div class="info">
                     <div>
                         <span class="subject">{{ item['name'] }}</span>
                         <span class="age">{{ item['age'] }}</span>
                     </div>
-                    <div class="state"><span class="__btn6 gray2">{{ item['status'] }}</span></div>
+                    <div class="state">
+                        {% if item['status'] == '대여가능' %}
+                        <span class="__btn6 blue2">{{ item['status'] }}</span>
+                        {% else %}
+                        <span class="__btn6 gray2">{{ item['status'] }}</span>
+                        {% endif %}
+                    </div>
                 </div>
             </a>
             {% endfor %}
         </div>
+        
+        
+    </div>
+    <div class="page_number">
+        <div class="page_style">
+            <div class="page_inner">
+                {% if total_posts > per_page %}
+                    {% if page > 1 %}
+                        <a class="arr num first" href="{{ url_for('info', page=1, per_page=per_page) }}"><img src="../static/image/2.png" class="left" alt="left_first"></a>
+                        <a class="arr num prev" href="{{ url_for('info', page=page-1, per_page=per_page) }}"><img src="../static/image/2-.png" class="left" alt="left"></a>
+                    {% endif %}
+                    {% for num in range(1, total_posts // per_page + 2) %}
+                        <a class="num {% if num == page %}active{% endif %}" href="{{ url_for('info', page=num, per_page=per_page) }}">{{ num }}</a>
+                    {% endfor %}
+                    {% if page < total_posts // per_page + 1 %}
+                        <a class="arr num next" href="{{ url_for('info', page=page+1, per_page=per_page) }}"><img src="../static/image/1.png" class="right" alt="right" ></a>
+                        <a class="arr num last" href="{{ url_for('info', page=total_posts // per_page + 1, per_page=per_page) }}"><img src="../static/image/1-.png" class="right" alt="right_last"></a>
+                    {% endif %}
+                {% endif %}
+            </div>            
+        </div>      
     </div>
 </div>
-
+<div id="item-id"></div>
 <!-- 푸터 파일 -->
 <header class="footer">
     {% include 'footer.html' %}
 </header>    
+<script>
+    // JavaScript 코드를 여기에 직접 포함시키거나 외부 파일로 분리하여 링크할 수 있습니다.
+    function changeActive(activeId) {
+        // 모든 링크의 'active' 클래스 제거
+        document.querySelectorAll('.sort a').forEach(link => {
+            link.classList.remove('active');
+        });
+
+        // 선택된 링크에 'active' 클래스 추가
+        document.getElementById(activeId).classList.add('active');
+    }
+
+    function sortByDefault() {
+        sendSortRequest('default');
+    }
+
+    function sortByViewCount() {
+        sendSortRequest('view_count');
+    }
+
+    function sendSortRequest(sortType) {
+        fetch('/sort_items', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `sort_by=${sortType}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            updateItems(data.items);
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function updateItems(items) {
+        const toyList = document.querySelector('.__toyList');
+        toyList.innerHTML = ''; // 기존 아이템들을 삭제
+        items.forEach(item => {
+            toyList.innerHTML += `
+                <a href="${item['detail_url']}" class="box" onclick="increaseViewCount('${item['idx']}')">
+                    <div class="img"><img src="${item['img_src']}" width="120" height="120"></div>
+                    <div class="info">
+                        <div>
+                            <span class="subject">${item['name']}</span>
+                            <span class="age">${item['age']}</span>
+                        </div>
+                        <div class="state">
+                            ${item['status'] === '대여가능' ? '<span class="__btn6 blue2">' : '<span class="__btn6 gray2">'}${item['status']}</span>
+                        </div>
+                    </div>
+                </a>`;
+        });
+    }
+</script>
 </body>
 </html>

@@ -5,6 +5,14 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 from urllib.parse import urljoin
+import os
+import sys
+
+# insert_item.py 파일의 경로
+insert_item_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "insert_item.py"))
+
+# sys.path에 insert_item.py 파일의 경로를 추가하여 모듈을 임포트
+sys.path.append(os.path.dirname(insert_item_path))
 import insert_item
 # DB 연결 가져오기
 conn = insert_item.get_db_connection()
@@ -88,7 +96,7 @@ def get_detail_data():
     elif "4세 이상" in age:
         age = "48개월이상"
     elif "5세 이상" in age:
-        age = "60개월이상"                        
+        age = "5세이상"                        
     elif "6세 이상" in age:
         age = "6세이상"
     elif "7세 이상" in age:

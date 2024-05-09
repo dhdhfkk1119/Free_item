@@ -8,7 +8,6 @@
 a {
     text-decoration: none;
 }
-
 .content {
     width: 100%;
     position: relative;
@@ -23,6 +22,8 @@ a {
     background-size: 100%; 
     background-repeat: no-repeat;
     background-size: cover;
+    border-top: .2rem solid #738EB9;;
+    border-bottom: .2rem solid #738EB9;;
 }
 .content-in {
     display: flex;
@@ -45,13 +46,15 @@ a {
 .p-1{
     font-family: 'Gmarket Sans', sans-serif;
     font-size: 2.2rem;
-    color: #222;
     font-weight: 800;
+    color:#706161;
     position: relative;
     z-index: 10;
     margin: 0;
 }
-
+.header{
+    border-bottom: 1px solid #738EB9;
+}
 /* header 부분 */
 
 
@@ -155,9 +158,9 @@ select, input, textarea, button {
 .__toyList {
     display: flex;
     flex-wrap: wrap;
-    gap: 2.0rem 3.8rem;
-    padding-bottom: 4rem;
-    border-bottom: .1rem solid #ddd;
+    gap: 20px 10px;
+    padding-bottom: 2rem;
+    border-bottom: .1rem solid #738EB9;
 }
 .__toyList .box {
     display: block;
@@ -185,9 +188,13 @@ img {
 .box {
     text-decoration: none;
 }
+.age{
+    font-size: 12px;
+    color:black;
+}
 .__toyList .box .info .subject {
     
-    font-size: 0.8rem;
+    font-size: 16px;
     line-height: 1.3;
     font-weight: 800;
     color: #000;
@@ -206,6 +213,11 @@ img {
 [class*='__btn'].gray2 {
     background: #888;
     border-color: #888;
+    color: #fff;
+}
+[class*='__btn'].blue2 {
+    background: #F0D264;
+    border-color: #F0D264;
     color: #fff;
 }
 .__btn6 {
@@ -227,9 +239,51 @@ img {
     word-spacing: -0.02em;
     transition: 0.2s;
 }
-
-
-
+.num {
+    list-style: none;
+    text-decoration: none;
+    display: inline-block;
+    box-sizing: border-box;
+    vertical-align: top;
+    font-size: 16px;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    border: .1rem solid #ddd;
+    text-align: center;
+    color: #888;
+    z-index: 0;
+    margin: 0 .2rem;
+    position: relative;
+}
+.num:hover {
+    border:1px solid black;
+}
+.active {
+    color:white;
+    font-weight: bolder;
+    background-color: #555;
+}
+.page_number {
+    margin-top: 1.5rem;
+    position: relative;
+    min-height: 3.2rem;
+}
+.page_style{
+    font-size: 0;
+}
+.page_inner {
+    text-align: center;
+}
+.footer_text{
+    color:white;
+}
+.left {
+    width: 30px;
+}
+.right{
+    width: 30px;
+}
 /* ----------------------------------- 반응형 css -------------------------------------  */
 
 /* search 반응형  */

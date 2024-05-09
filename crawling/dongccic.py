@@ -4,7 +4,16 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
-import insert_item
+import os
+import sys
+
+# insert_item.py 파일의 경로
+insert_item_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "insert_item.py"))
+
+# sys.path에 insert_item.py 파일의 경로를 추가하여 모듈을 임포트
+sys.path.append(os.path.dirname(insert_item_path))
+import insert_item 
+
 # DB 연결 가져오기
 conn = insert_item.get_db_connection()
 
@@ -108,7 +117,7 @@ def get_detail_data():
             age = "전체연령"
     # 대여 상태 가져오기
     status_tags = soup.select(".book_possible")
-    status = "대여가능" if any(tag.text.strip() == "대여가능" for tag in status_tags) else "대여중"
+    status = "대여가능" if any(tag.text.strip() == "대여가능" for tag in status_tags) else "예약중"
 
     # 이미지 주소 가져오기
     img_tag = soup.select_one(".book_detail.clearfix > figure > img")
@@ -116,7 +125,7 @@ def get_detail_data():
     full_img_src = img_src
     detail_url = driver.current_url
 
-    insert_item(conn,name,age,status,full_img_src,detail_url)
+    insert_item.insert_item(conn,name,age,status,full_img_src,detail_url)
 
     print("이미지 주소:", img_src)
     print("이름:", name)

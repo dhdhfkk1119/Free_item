@@ -9,6 +9,38 @@
         bottom: 0;
         width: 100%;
     }
+    .nav-item {
+        color:#738EB9 !important;
+    }
+    .footer_in{
+        
+        text-align: center;
+    }
+    .footer_ul {
+        margin: 0;
+        padding: 0;
+        line-height: 75px;
+    }
+    .footer_ul > li {
+        font-weight: bolder;
+        display: inline-block;
+        text-decoration: none;
+        list-style: none;
+    }
+    .nav-item-p {
+        color:#738EB9;
+        font-weight: bolder;
+        line-height: 75px;
+    }
+    .n_p{
+        margin-bottom: 0;
+    }
+    .hr {
+        border: 1px solid #738EB9;
+        text-align: center;
+        width: 90%;
+        margin: 0 auto;
+    }
 </style>
 </head>
 <body>
@@ -16,16 +48,19 @@
     {% include 'layout.html' %}
 </div>
 <div>
-    <div class="footer" style="background-color: #fbd3ad;">
-        <footer class="py-4 footer-1">
-            <ul class="nav justify-content-center border-bottom pb-3 mb-3">
-            <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Home</a></li>
-            <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Features</a></li>
-            <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Pricing</a></li>
-            <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">FAQs</a></li>
-            <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">About</a></li>
+    <div class="footer" >
+        <hr class="hr" />
+        <footer class="footer_in">
+            <ul class="footer_ul">
+            <li class="nav-item"><a href="#" class="nav-link px-2 footer_text">Home</a></li>
+            <li class="nav-item"><a href="#" class="nav-link px-2 footer_text">Features</a></li>
+            <li class="nav-item"><a href="#" class="nav-link px-2 footer_text">Pricing</a></li>
+            <li class="nav-item"><a href="#" class="nav-link px-2 footer_text">FAQs</a></li>
+            <li class="nav-item last"><a href="#" class="nav-link px-2 footer_text">About</a></li>
             </ul>
-            <p class="text-center text-muted">© 2024 Company, Park,Jo</p>
+            <div class="nav-item-p">
+                <p class="n_p">© 2024 Company, Park hyun bin ,Jo Joung woo</p>
+            </div>
         </footer>
     </div>
 </div> 
