@@ -14,6 +14,8 @@ insert_item_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..",
 sys.path.append(os.path.dirname(insert_item_path))
 import insert_item
 
+conn = insert_item.get_db_connection()
+
 # 웹 드라이버 초기화
 driver = webdriver.Chrome()
 
