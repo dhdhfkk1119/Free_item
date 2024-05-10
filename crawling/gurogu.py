@@ -84,7 +84,7 @@ def get_detail_data():
 
     # 나이 정보 가져오기
     age_tag = soup.select_one('label:contains("사용연령") + span')
-    age = age_tag.text.strip() if age_tag else "Age not found"
+    age = age_tag.text.strip() if age_tag else "기타"
     if "0세이상" in age:
         age = "0개월이상"
     elif "1세이상" in age:
@@ -104,7 +104,7 @@ def get_detail_data():
 
     # 대여 상태 가져오기
     status_tag = soup.select_one("span.ikc-item-status")
-    status = status_tag.text.strip() if status_tag else "Status not found"
+    status = status_tag.text.strip() if status_tag else "예약중"
     if "대여가능" in status:
         status = "대여가능"
     else :

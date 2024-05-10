@@ -44,7 +44,7 @@ try:
 
                 # 나이 정보 가져오기
                 age_tag = p.select_one("td:contains('이상')")
-                age = age_tag.text.strip() if age_tag else "Age not found"
+                age = age_tag.text.strip() if age_tag else "기타"
                 if "만 4세" in age:
                     age = "48개월이상"
                 elif "만 5세" in age:

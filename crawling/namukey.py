@@ -85,7 +85,7 @@ def get_detail_data():
 
         # 나이 정보 가져오기
         age_element = wait.until(EC.presence_of_element_located((By.XPATH, "//p[contains(@class, 'txt1') and contains(text(), '사용연령')]/following-sibling::p[@class='txt2']")))
-        age = age_element.text.strip() if age_element else "Age not found"
+        age = age_element.text.strip() if age_element else "기타"
         if "만0세" in age:
             age = "0개월이상"
         elif "만1세" in age:

@@ -87,7 +87,7 @@ def get_detail_data():
 
     # 나이 정보 가져오기
     age_tag = soup.find('th',text='연령').find_next_sibling('td')
-    age = age_tag.text.strip() if age_tag else "Age not found"
+    age = age_tag.text.strip() if age_tag else "기타"
     if "0세이상" in age:
         age = "0개월이상"
     elif "1세이상" in age:
@@ -107,7 +107,7 @@ def get_detail_data():
                     
     # 대여 상태 가져오기
     status_tags = soup.select_one("span.toy_state")
-    status = status_tags.text.strip() if status_tags else "Not status_tage"
+    status = status_tags.text.strip() if status_tags else "예약중"
     if "대여가능" in status:
         status = "대여가능"
     else :

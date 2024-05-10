@@ -84,7 +84,7 @@ def get_detail_data(detail_url):
     name = name_tag.text.strip() if name_tag else "Name not found"
 
     age_tag = soup.find('th', text='연령').find_next_sibling('td')
-    age = age_tag.text.strip() if age_tag else "Age not found"
+    age = age_tag.text.strip() if age_tag else "기타"
     if "0세부터" in age:
         age = "0개월이상"
     elif "1세부터" in age:
@@ -97,7 +97,7 @@ def get_detail_data(detail_url):
         age = "전체연령"     
 
     status_tags = soup.find('th', text='현재상태').find_next_sibling('td')
-    status = status_tags.text.strip() if status_tags else "Status not found"
+    status = status_tags.text.strip() if status_tags else "예약중"
     status = "대여가능" if '보관' in status else "예약중"
 
     img_tag = soup.select_one("td.ta_center.va_top > img")

@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -29,43 +30,25 @@
 <div class="content-2">
     <div class="inner">
         <form name="goSearch" method="get" class="toySearch_" action="search" >
-            <input type="hidden" name="pagenumber" value="1">
-            <input type="hidden" name="domain_seq_s">
-            <input type="hidden" name="s_gb">
-            <input type="hidden" name="prd_id">
-            <input type="hidden" name="options" value="0">
-
             <div class="__schHead">
-                <select id="domain_seq" name="domain_seq" class="__inp">
-                    <option value="">장난감 종류</option>
-                    <option value="다문화">다문화</option>
-                    <option value="장애영유아">장애영유아</option>
-                    <option value="라돈측정기">라돈측정기</option>
-                    <option value="자동차">자동차 .동물모형</option>
-                    <option value="음률">음률</option>
-                    <option value="조작">조작놀이</option>
-                    <option value="퍼즐">퍼즐.블럭</option>
-                    <option value="신체">신체놀이</option>
-                    <option value="역할">역할놀이</option>
-                </select>
-                    <select id="years_seq" name="years_seq" class="__inp">
-                        <option value="">사용연령</option>
-                        <option value="0~1세">0~1세</option>
-                        <option value="0~2세">0~2세</option>
-                        <option value="3~5세">3~5세</option>
-                        <option value="6세이상">6세 이상</option>
+                    <select id="years_seq" name="age" class="__inp">
+                        <option value="none">사용연령</option>
+                        <option value=12>12개월 이상</option>
+                        <option value=24>24개월 이상</option>
+                        <option value=36>36개월 이상</option>
+                        <option value=48>48개월 이상</option>
+                        <option value=60>60개월 이상</option>
                         <option value="기타">기타</option>
                         <option value="전체연령">전체연령</option>
                     </select>
-                <select id="toy_status" name="toy_status" class="__inp">
-                    <option value="">대여상태</option>
-                        <option value="대여상태">대여 가능</option>
+                <select id="toy_status" name="status" class="__inp">
+                    <option value="none">대여상태</option>
+                        <option value="대여가능">대여 가능</option>
                         <option value="예약중">예약중</option>
                 </select>
                 <input type="text" class="__inp" placeholder="장난감 이름/등록 번호" name="searchString" value="">
                 <button type="submit">검색</button>
             </div>
-
         </form>
         <!-- 장난감 정렬  -->
         <div class="__topArea line __mt40">
@@ -81,29 +64,111 @@
         </div>
         <!-- 장난감 상품 이미지 -->
         <div class="__toyList">
-            {% if result %}
-            {% for item in results %}
-            <a href="{{ item['detail_url'] }}" class="box">
-                <div class="img"><img src="{{ item['img_src'] }}" width="180" height="180"></div>
+            {% for item in items %}
+            <a href="{{ item['detail_url'] }}" class="box" onclick="increaseViewCount('{{ item['idx'] }}')">
+                <div class="img"><img src="{{ item['img_src'] }}" width="150" height="150"></div>
                 <div class="info">
                     <div>
                         <span class="subject">{{ item['name'] }}</span>
                         <span class="age">{{ item['age'] }}</span>
                     </div>
-                    <div class="state"><span class="__btn6 gray2">{{ item['status'] }}</span></div>
+                    <div class="state">
+                        {% if item['status'] == '대여가능' %}
+                        <span class="__btn6 blue2">{{ item['status'] }}</span>
+                        {% else %}
+                        <span class="__btn6 gray2">{{ item['status'] }}</span>
+                        {% endif %}
+                    </div>
                 </div>
             </a>
             {% endfor %}
-            {% else %}
-            <p>검색 결과가 없습니다.</p>
-            {% endif %}
         </div>
     </div>
+</div>
+<div class="page_number">
+    <div class="page_style">
+        <div class="page_inner">
+            {% if total_posts > per_page %}
+                {% if page > 1 %}
+                    <a class="arr num first" href="{{ url_for('info', page=1, per_page=per_page) }}"><img src="../static/image/2.png" class="left" alt="left_first"></a>
+                    <a class="arr num prev" href="{{ url_for('info', page=page-1, per_page=per_page) }}"><img src="../static/image/2-.png" class="left" alt="left"></a>
+                {% endif %}
+                {% set start_page = 1 %}
+                {% set end_page = 11 %}
+                {% if total_posts // per_page < 10 %}
+                    {% set end_page = (total_posts - 1) // per_page + 1 %}
+                {% endif %}
+                {% if page > 5 %}
+                    {% set start_page = page - 4 %}
+                    {% set end_page = page + 5 %}
+                    {% if end_page > total_posts // per_page + 1 %}
+                        {% set end_page = total_posts // per_page + 1 %}
+                        {% set start_page = end_page - 9 %}
+                    {% endif %}
+                {% endif %}
+                {% for num in range(start_page, end_page) %}
+                <a class="num {% if num == page %}active{% endif %}" href="#" onclick="nextPage({{ num }})">{{ num }}</a>
+                {% endfor %}            
+                {% if page < total_posts // per_page %}
+                    <a class="arr num next" href="{{ url_for('search', page=next_page, per_page=per_page, age=age, status=status, searchString=searchString) }}"><img src="../static/image/1.png" class="right" alt="right" ></a>
+                    <a class="arr num last" href="{{ url_for('info', page=total_posts // per_page + 1, per_page=per_page) }}"><img src="../static/image/1-.png" class="right" alt="right_last"></a>
+                {% endif %}
+            {% endif %}
+        </div>            
+    </div>      
+</div>
 </div>
 
 <!-- 푸터 파일 -->
 <header class="footer">
     {% include 'footer.html' %}
 </header>    
+
+<script>
+    window.onload = function() {
+        // 페이지가 로드될 때 실행되는 함수
+
+        // 검색 결과가 없으면 안내 메시지를 표시하고, 있으면 숨깁니다.
+        var searchResult = document.getElementById("searchResult");
+        searchResult.style.display = "{{ 'none' if results else 'block' }}";
+
+        // 검색어와 검색 조건 입력 필드 초기화
+        document.getElementById('age').value = "{{ age if years_seq else 'none' }}";
+        document.getElementById('status').value = "{{ status if toy_status else 'none' }}";
+        document.getElementById('searchString').value = "{{ searchString if searchString else '' }}";
+    }
+
+// 같이 검색 파라미터 넘겨주기 
+function nextPage(page) {
+    var url = window.location.href;
+    var newUrl = modifyURL(url, 'page', page);
+    window.location.href = newUrl;
+}
+
+function modifyURL(url, key, value) {
+    var urlParts = url.split('?');
+    if (urlParts.length >= 2) {
+        var queryParams = urlParts[1].split('&');
+        var found = false;
+        for (var i = 0; i < queryParams.length; i++) {
+            var keyValuePair = queryParams[i].split('=');
+            if (keyValuePair[0] === key) {
+                keyValuePair[1] = value;
+                queryParams[i] = keyValuePair.join('=');
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            queryParams.push(key + '=' + value);
+        }
+        urlParts[1] = queryParams.join('&');
+    } else {
+        urlParts.push(key + '=' + value);
+    }
+    return urlParts.join('?');
+}
+
+</script>
 </body>
 </html>

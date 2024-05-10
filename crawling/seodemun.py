@@ -84,7 +84,7 @@ def get_detail_data():
 
     # 나이 정보 가져오기
     age_tag = soup.find('span',text='연령').find_next_sibling('span')
-    age = age_tag.text.strip() if age_tag else "Age not found"
+    age = age_tag.text.strip() if age_tag else "기타"
     if "0세 이상" in age:
         age = "0개월이상"
     elif "1세 이상" in age:

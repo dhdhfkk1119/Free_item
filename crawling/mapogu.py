@@ -57,7 +57,7 @@ try:
                 else :
                     age = "전체연령"
                 # 대여 상태 가져오기
-                status = "상태불가"
+                status = "대여중"
 
                 # 이미지 주소 가져오기
                 img_tag = p.select_one("li.pd_item > a > img")

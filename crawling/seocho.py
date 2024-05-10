@@ -47,7 +47,7 @@ try:
 
                 # 나이 정보 가져오기
                 age_tag = p.select_one("span.small-txt")
-                age = age_tag.text.strip() if age_tag else "Age not found"
+                age = age_tag.text.strip() if age_tag else "기타"
                 if "0세이상" in age:
                     age = "0개월이상"
                 elif "1세이상" in age:
@@ -66,7 +66,7 @@ try:
                 status_tag_available = p.select_one("strong.card-btn")
 
                 status_tag = status_tag_line if status_tag_line else status_tag_available
-                status = status_tag.text.strip() if status_tag else "Status not found"
+                status = status_tag.text.strip() if status_tag else "대여중"
                 if "대여가능" in status:
                     status = "대여가능"
                 else : 

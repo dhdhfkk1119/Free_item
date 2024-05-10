@@ -89,7 +89,7 @@ def get_detail_data():
 
     # 나이 정보 가져오기
     age_tag = soup.select_one("td.bgf4f7fc:contains('연령') + td")
-    age = age_tag.text.strip() if age_tag else "Age not found"
+    age = age_tag.text.strip() if age_tag else "기타"
 
     # 대여 상태 가져오기
     status = "대여가능" if soup.find(text="대여신청") else "예약중"

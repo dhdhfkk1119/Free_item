@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for
 import pymysql.cursors
 import pymysql
 from flask import jsonify
+import re
 
 app = Flask(__name__)
 
@@ -14,6 +15,14 @@ def get_db_connection():
         charset='utf8'
     )
     return conn
+
+def extract_number(text):
+    pattern = r'\b\d+\b'
+    matches = re.findall(pattern, text)
+    if matches:
+        return int(matches[0])
+    else:
+        return None
 
 @app.route('/')
 def index():
@@ -85,6 +94,69 @@ def sort_items():
     else:
         return jsonify({'error': 'Method not allowed'}), 405
 
+@app.route('/search', methods=["GET"])
+def search():
+    age = request.args.get('age')
+    status = request.args.get('status')
+    searchString = request.args.get('searchString')
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 36, type=int)
+
+    conn = get_db_connection()
+    curs = conn.cursor(pymysql.cursors.DictCursor)
+
+    query = "SELECT idx, name, age, status, img_src, detail_url FROM item WHERE 1=1"
+    params = []
+
+    # 조건 추가
+    if age and age != 'none':
+        age_number = extract_number(age)
+        if age_number is not None:
+            query += " AND age >= %s"
+            params.append(age_number)
+        elif age == '전체':
+            query += " AND age LIKE %s"
+            params.append('%전체%')
+        elif age == '기타':
+            query += " AND age LIKE %s"
+            params.append('%기타%')
+        else:
+            age_number = extract_number(age)
+            if age_number is not None:
+                query += " AND age >= %s"
+                params.append(age_number)
+            else:
+                query += " AND age = %s"
+                params.append(age)
+
+    if status and status != "none":
+        query += " AND status = %s"
+        params.append(status)
+
+    if searchString:
+        query += " AND (name LIKE %s OR idx = %s)"
+        params.extend([f"%{searchString}%", searchString])
+
+    # 페이징을 위한 쿼리 수정
+    total_query = "SELECT COUNT(*) AS total FROM item WHERE " + query[query.index("WHERE")+6:]
+    curs.execute(total_query, params)
+    total_posts = curs.fetchone()['total']
+
+    # 페이지네이션 적용
+    query += " LIMIT %s OFFSET %s"
+    params.extend([per_page, (page - 1) * per_page])
+
+    # 쿼리 실행
+    curs.execute(query, params)
+    items = curs.fetchall()
+
+    curs.close()
+    conn.close()
+
+    # 다음 페이지로 넘어갈 때, 현재 페이지와 관련된 검색 조건을 다음 페이지로도 함께 전달
+    next_page = page + 1 if (page * per_page) < total_posts else None
+    return render_template('search.html', items=items, total_posts=total_posts, page=page, per_page=per_page, next_page=next_page, age=age, status=status, searchString=searchString)
+
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
