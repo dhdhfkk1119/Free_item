@@ -1,0 +1,52 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+     <form name="goSearch" method="post" class="toySearch_" action="write">
+        <input type="hidden" name="pagenumber" value="1">
+        <input type="hidden" name="domain_seq_s">
+        <input type="hidden" name="s_gb">
+        <input type="hidden" name="prd_id">
+        <input type="hidden" name="options" value="0">
+
+            <div class="__schHead">
+                <select id="domain_seq" name="domain_seq" class="__inp">
+                    <option value="">장난감 종류</option>
+                                            <option value="14">다문화</option>
+                                            <option value="13">장애영유아</option>
+                                            <option value="9">라돈측정기</option>
+                                            <option value="5">자동차 .동물모형</option>
+                                            <option value="8">음률</option>
+                                            <option value="1">조작놀이</option>
+                                            <option value="2">퍼즐.블럭</option>
+                                            <option value="3">신체놀이</option>
+                                            <option value="4">역할놀이</option>
+                                    </select>
+                <select id="years_seq" name="years_seq" class="__inp">
+                    <option value="">사용연령</option>
+                                                <option value="6">0~1세</option>
+                                                <option value="2">0~2세</option>
+                                                <option value="3">3~5세</option>
+                                                <option value="4">6세 이상</option>
+                                                <option value="5">기타</option>
+                                                <option value="1">전체연령</option>
+                                    </select>
+                <select id="delivery" name="delivery" class="__inp">
+                    <option value="" selected="">이미지 클릭</option>
+                </select>
+                <select id="toy_status" name="toy_status" class="__inp">
+                    <option value="">대여상태</option>
+                        <option value="0">대여 가능</option>
+                        <option value="1">대여중</option>
+                        <option value="2">예약중</option>
+                </select>
+                <input type="text" class="__inp" placeholder="장난감 이름/등록 번호" name="searchString" value="">
+                <button type="submit">검색</button>
+            </div>
+
+    </form>
+</body>
+</html>

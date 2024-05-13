@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<style>
+    .footer{
+        bottom: 0;
+        width: 100%;
+    }
+    .nav-item {
+        color:#738EB9 !important;
+    }
+    .footer_in{
+        
+        text-align: center;
+    }
+    .footer_ul {
+        margin: 0;
+        padding: 0;
+        line-height: 75px;
+    }
+    .footer_ul > li {
+        font-weight: bolder;
+        display: inline-block;
+        text-decoration: none;
+        list-style: none;
+    }
+    .nav-item-p {
+        color:#738EB9;
+        font-weight: bolder;
+        line-height: 75px;
+    }
+    .n_p{
+        margin-bottom: 0;
+    }
+    .hr {
+        border: 1px solid #738EB9;
+        text-align: center;
+        width: 90%;
+        margin: 0 auto;
+    }
+</style>
+</head>
+<body>
+<div id="includedContent">
+    {% include 'layout.html' %}
+</div>
+<div>
+    <div class="footer" >
+        <hr class="hr" />
+        <footer class="footer_in">
+            <ul class="footer_ul">
+            <li class="nav-item"><a href="#" class="nav-link px-2 footer_text">Home</a></li>
+            <li class="nav-item"><a href="#" class="nav-link px-2 footer_text">Features</a></li>
+            <li class="nav-item"><a href="#" class="nav-link px-2 footer_text">Pricing</a></li>
+            <li class="nav-item"><a href="#" class="nav-link px-2 footer_text">FAQs</a></li>
+            <li class="nav-item last"><a href="#" class="nav-link px-2 footer_text">About</a></li>
+            </ul>
+            <div class="nav-item-p">
+                <p class="n_p">© 2024 Company, Park hyun bin ,Jo Joung woo</p>
+            </div>
+        </footer>
+    </div>
+</div> 
+</body>
+</html>
