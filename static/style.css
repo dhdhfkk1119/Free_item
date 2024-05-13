@@ -37,9 +37,6 @@
     font-weight: bolder;
 }
 /* 메인 폰트 이미지 크기  */
-@media screen and(min-width:1024px){
-
-}
 .btn-span {
     font-size: 30px;
 }

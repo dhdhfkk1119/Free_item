@@ -54,9 +54,9 @@
         <div class="__topArea line __mt40">
             <div class="lef">
                 <div class="sort">
-                    <a href="" class="active">최신순</a>
-                    <a href="">조회순</a>
-                </div>
+                    <a href="#" id="defaultSort" class="active" onclick="changeActive('defaultSort'); sortByDefault();">업데이트순</a>
+                    <a href="#" id="viewCountSort" onclick="changeActive('viewCountSort'); sortByViewCount();">조회순</a>
+                </div>                          
             </div>
             <div class="rig">
                 <div class="total">총 게시물 <span>{{ total_posts }}</span> 건</div>
@@ -90,13 +90,13 @@
         <div class="page_inner">
             {% if total_posts > per_page %}
                 {% if page > 1 %}
-                    <a class="arr num first" href="{{ url_for('info', page=1, per_page=per_page) }}"><img src="../static/image/2.png" class="left" alt="left_first"></a>
-                    <a class="arr num prev" href="{{ url_for('info', page=page-1, per_page=per_page) }}"><img src="../static/image/2-.png" class="left" alt="left"></a>
+                    <a class="arr num first" href="{{ url_for('search', page=1, per_page=per_page, age=age, status=status, searchString=searchString) }}"><img src="../static/image/2.png" class="left" alt="left_first"></a>
+                    <a class="arr num prev" href="{{ url_for('search', page=page-1, per_page=per_page, age=age, status=status, searchString=searchString) }}"><img src="../static/image/2-.png" class="left" alt="left"></a>
                 {% endif %}
                 {% set start_page = 1 %}
                 {% set end_page = 11 %}
                 {% if total_posts // per_page < 10 %}
-                    {% set end_page = (total_posts - 1) // per_page + 1 %}
+                    {% set end_page = total_posts // per_page + 1 %}
                 {% endif %}
                 {% if page > 5 %}
                     {% set start_page = page - 4 %}
@@ -106,15 +106,15 @@
                         {% set start_page = end_page - 9 %}
                     {% endif %}
                 {% endif %}
-                {% for num in range(start_page, end_page) %}
-                <a class="num {% if num == page %}active{% endif %}" href="#" onclick="nextPage({{ num }})">{{ num }}</a>
-                {% endfor %}            
+                {% for num in range(start_page, end_page + 1) %}
+                    <a class="num {% if num == page %}active{% endif %}" href="{{ url_for('search', page=num, per_page=per_page, age=age, status=status, searchString=searchString) }}">{{ num }}</a>
+                {% endfor %}
                 {% if page < total_posts // per_page %}
-                    <a class="arr num next" href="{{ url_for('search', page=next_page, per_page=per_page, age=age, status=status, searchString=searchString) }}"><img src="../static/image/1.png" class="right" alt="right" ></a>
-                    <a class="arr num last" href="{{ url_for('info', page=total_posts // per_page + 1, per_page=per_page) }}"><img src="../static/image/1-.png" class="right" alt="right_last"></a>
+                    <a class="arr num next" href="{{ url_for('search', page=page+1, per_page=per_page, age=age, status=status, searchString=searchString) }}"><img src="../static/image/1.png" class="right" alt="right" ></a>
+                    <a class="arr num last" href="{{ url_for('search', page=total_posts // per_page + 1, per_page=per_page, age=age, status=status, searchString=searchString) }}"><img src="../static/image/1-.png" class="right" alt="right_last"></a>
                 {% endif %}
             {% endif %}
-        </div>            
+        </div>           
     </div>      
 </div>
 </div>
@@ -141,9 +141,27 @@
 // 같이 검색 파라미터 넘겨주기 
 function nextPage(page) {
     var url = window.location.href;
-    var newUrl = modifyURL(url, 'page', page);
-    window.location.href = newUrl;
+    var age = document.getElementById('age').value;
+    var status = document.getElementById('status').value;
+    var searchString = document.getElementById('searchString').value;
+
+    // 현재 URL이 검색 페이지인지 확인
+    if (url.includes('/search')) {
+        // 검색 페이지인 경우, 정보 페이지로 이동할 때 검색 조건을 유지하도록 URL 수정
+        url = modifyURL(url, 'page', page);
+        url = modifyURL(url, 'age', age);
+        url = modifyURL(url, 'status', status);
+        url = modifyURL(url, 'searchString', searchString);
+    } else {
+        // 검색 페이지가 아닌 경우, 그냥 페이지 이동
+        url = modifyURL(url, 'page', page);
+        // 정보 페이지로 이동할 때 검색 조건이 유지되도록 추가
+        url += '&age=' + age + '&status=' + status + '&searchString=' + searchString;
+    }
+
+    window.location.href = url;
 }
+
 
 function modifyURL(url, key, value) {
     var urlParts = url.split('?');
@@ -168,7 +186,59 @@ function modifyURL(url, key, value) {
     }
     return urlParts.join('?');
 }
+// JavaScript 코드를 여기에 직접 포함시키거나 외부 파일로 분리하여 링크할 수 있습니다.
+function changeActive(activeId) {
+        // 모든 링크의 'active' 클래스 제거
+        document.querySelectorAll('.sort a').forEach(link => {
+            link.classList.remove('active');
+        });
 
+        // 선택된 링크에 'active' 클래스 추가
+        document.getElementById(activeId).classList.add('active');
+    }
+
+    function sortByDefault() {
+        sendSortRequest('default');
+    }
+
+    function sortByViewCount() {
+        sendSortRequest('view_count');
+    }
+
+    function sendSortRequest(sortType) {
+        fetch('/sort_items', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `sort_by=${sortType}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            updateItems(data.items);
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function updateItems(items) {
+        const toyList = document.querySelector('.__toyList');
+        toyList.innerHTML = ''; // 기존 아이템들을 삭제
+        items.forEach(item => {
+            toyList.innerHTML += `
+                <a href="${item['detail_url']}" class="box" onclick="increaseViewCount('${item['idx']}')">
+                    <div class="img"><img src="${item['img_src']}" width="120" height="120"></div>
+                    <div class="info">
+                        <div>
+                            <span class="subject">${item['name']}</span>
+                            <span class="age">${item['age']}</span>
+                        </div>
+                        <div class="state">
+                            ${item['status'] === '대여가능' ? '<span class="__btn6 blue2">' : '<span class="__btn6 gray2">'}${item['status']}</span>
+                        </div>
+                    </div>
+                </a>`;
+        });
+    }
 </script>
 </body>
 </html>

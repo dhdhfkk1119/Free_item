@@ -96,7 +96,7 @@
                     {% set start_page = 1 %}
                     {% set end_page = 11 %}
                     {% if total_posts // per_page < 10 %}
-                        {% set end_page = (total_posts - 1) // per_page + 1 %}
+                        {% set end_page = total_posts // per_page + 1 %}
                     {% endif %}
                     {% if page > 5 %}
                         {% set start_page = page - 4 %}
@@ -109,7 +109,7 @@
                     {% for num in range(start_page, end_page) %}
                         <a class="num {% if num == page %}active{% endif %}" href="{{ url_for('info', page=num, per_page=per_page) }}">{{ num }}</a>
                     {% endfor %}
-                    {% if page < total_posts // per_page %}
+                    {% if total_posts // per_page > 1 and page < total_posts // per_page %}
                         <a class="arr num next" href="{{ url_for('info', page=page+1, per_page=per_page) }}"><img src="../static/image/1.png" class="right" alt="right" ></a>
                         <a class="arr num last" href="{{ url_for('info', page=total_posts // per_page + 1, per_page=per_page) }}"><img src="../static/image/1-.png" class="right" alt="right_last"></a>
                     {% endif %}
