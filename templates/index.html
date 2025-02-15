@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link href="/static/style.css" rel="stylesheet" type="text/css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    // 버튼 클릭시 이벤트
+    $(function() {
+        $('.btn-3d').click(function() {
+            $(this).addClass('clicked');
+            setTimeout(() => {
+                $(this).removeClass('clicked');
+            }, 200);
+        });
+    });
+</script>
+<title>Insert title here</title>
+</head>
+<style>
+    .index_p{
+        color:#706161;
+    }
+    .index_p2{
+        color:#706161;
+    }
+</style>
+<body>
+<div>
+    <!-- 헤더 파일 -->
+    <div id="header"></div>
+    {% include 'header.html' %}
+
+    <!-- 메인 컨테이너 -->
+    <div class="content">
+        <div class="content-op">
+        </div>
+        <div class="content-in">
+            <!-- font -->
+            <div class="content-wrap">
+                <div class="content-text">
+                    <p class="index_p">무료로 물건을 이용할 수 있는 정보를 담은 페이지</p>
+                    <p class="index_p2">A page containing free access and reservation information.</p>
+                </div>
+                <div class="btn-container">
+                    <a href="/info" class="btn-3d yellow"><span class="btn-span">장난감</span></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 푸터 파일 -->
+    {% include 'footer.html' %}
+</div> 
+</body>
+</html>

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    
+</head>
+<link href="/static/info.css" rel="stylesheet" type="text/css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<link href="https://webfontworld.github.io/gmarket/GmarketSans.css" rel="stylesheet">
+<body>
+<!-- 헤더 파일 -->
+<header class="header">
+    {% include 'header.html' %}
+</header>
+<!-- 메인 -->
+<div class="content">
+    <div class="content-op">
+    </div>
+    <div class="content-in">
+        <!-- font -->
+        <div class="content-wrap">
+            <div class="content-text">
+                <p class="p-1">장난감</p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="content-2">
+    <div class="inner">
+        <form name="goSearch" method="get" class="toySearch_" action="search" >
+            <div class="__schHead">
+                    <select id="years_seq" name="age" class="__inp">
+                        <option value="none">사용연령</option>
+                        <option value=12>12개월 이상</option>
+                        <option value=24>24개월 이상</option>
+                        <option value=36>36개월 이상</option>
+                        <option value=48>48개월 이상</option>
+                        <option value=60>60개월 이상</option>
+                        <option value="기타">기타</option>
+                        <option value="전체연령">전체연령</option>
+                    </select>
+                <select id="toy_status" name="status" class="__inp">
+                    <option value="none">대여상태</option>
+                        <option value="대여가능">대여 가능</option>
+                        <option value="예약중">예약중</option>
+                </select>
+                <input type="text" class="__inp" placeholder="장난감 이름/등록 번호" name="searchString" value="">
+                <button type="submit">검색</button>
+            </div>
+        </form>
+        <!-- 장난감 정렬  -->
+        <div class="__topArea line __mt40">
+            <div class="lef">
+                <div class="sort">
+                    <a href="#" id="defaultSort" class="active" onclick="changeActive('defaultSort'); sortByDefault();">업데이트순</a>
+                    <a href="#" id="viewCountSort" onclick="changeActive('viewCountSort'); sortByViewCount();">조회순</a>
+                </div>                          
+            </div>
+            <div class="rig">
+                <div class="total">총 게시물 <span>{{ total_posts }}</span> 건</div>
+            </div>
+        </div>
+        <!-- 장난감 상품 이미지 -->
+        <div class="__toyList">
+            {% for item in items %}
+            <a href="{{ item['detail_url'] }}" class="box" onclick="increaseViewCount('{{ item['idx'] }}')">
+                <div class="img"><img src="{{ item['img_src'] }}" width="150" height="150"></div>
+                <div class="info">
+                    <div>
+                        <span class="subject">{{ item['name'] }}</span>
+                        <span class="age">{{ item['age'] }}</span>
+                    </div>
+                    <div class="state">
+                        {% if item['status'] == '대여가능' %}
+                        <span class="__btn6 blue2">{{ item['status'] }}</span>
+                        {% else %}
+                        <span class="__btn6 gray2">{{ item['status'] }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<div class="page_number">
+    <div class="page_style">
+        <div class="page_inner">
+            {% if total_posts > per_page %}
+                {% if page > 1 %}
+                    <a class="arr num first" href="{{ url_for('search', page=1, per_page=per_page, age=age, status=status, searchString=searchString) }}"><img src="../static/image/2.png" class="left" alt="left_first"></a>
+                    <a class="arr num prev" href="{{ url_for('search', page=page-1, per_page=per_page, age=age, status=status, searchString=searchString) }}"><img src="../static/image/2-.png" class="left" alt="left"></a>
+                {% endif %}
+                {% set start_page = 1 %}
+                {% set end_page = 11 %}
+                {% if total_posts // per_page < 10 %}
+                    {% set end_page = total_posts // per_page + 1 %}
+                {% endif %}
+                {% if page > 5 %}
+                    {% set start_page = page - 4 %}
+                    {% set end_page = page + 5 %}
+                    {% if end_page > total_posts // per_page + 1 %}
+                        {% set end_page = total_posts // per_page + 1 %}
+                        {% set start_page = end_page - 9 %}
+                    {% endif %}
+                {% endif %}
+                {% for num in range(start_page, end_page + 1) %}
+                    <a class="num {% if num == page %}active{% endif %}" href="{{ url_for('search', page=num, per_page=per_page, age=age, status=status, searchString=searchString) }}">{{ num }}</a>
+                {% endfor %}
+                {% if page < total_posts // per_page %}
+                    <a class="arr num next" href="{{ url_for('search', page=page+1, per_page=per_page, age=age, status=status, searchString=searchString) }}"><img src="../static/image/1.png" class="right" alt="right" ></a>
+                    <a class="arr num last" href="{{ url_for('search', page=total_posts // per_page + 1, per_page=per_page, age=age, status=status, searchString=searchString) }}"><img src="../static/image/1-.png" class="right" alt="right_last"></a>
+                {% endif %}
+            {% endif %}
+        </div>           
+    </div>      
+</div>
+</div>
+
+<!-- 푸터 파일 -->
+<header class="footer">
+    {% include 'footer.html' %}
+</header>    
+
+<script>
+    window.onload = function() {
+        // 페이지가 로드될 때 실행되는 함수
+
+        // 검색 결과가 없으면 안내 메시지를 표시하고, 있으면 숨깁니다.
+        var searchResult = document.getElementById("searchResult");
+        searchResult.style.display = "{{ 'none' if results else 'block' }}";
+
+        // 검색어와 검색 조건 입력 필드 초기화
+        document.getElementById('age').value = "{{ age if years_seq else 'none' }}";
+        document.getElementById('status').value = "{{ status if toy_status else 'none' }}";
+        document.getElementById('searchString').value = "{{ searchString if searchString else '' }}";
+    }
+
+// 같이 검색 파라미터 넘겨주기 
+function nextPage(page) {
+    var url = window.location.href;
+    var age = document.getElementById('age').value;
+    var status = document.getElementById('status').value;
+    var searchString = document.getElementById('searchString').value;
+
+    // 현재 URL이 검색 페이지인지 확인
+    if (url.includes('/search')) {
+        // 검색 페이지인 경우, 정보 페이지로 이동할 때 검색 조건을 유지하도록 URL 수정
+        url = modifyURL(url, 'page', page);
+        url = modifyURL(url, 'age', age);
+        url = modifyURL(url, 'status', status);
+        url = modifyURL(url, 'searchString', searchString);
+    } else {
+        // 검색 페이지가 아닌 경우, 그냥 페이지 이동
+        url = modifyURL(url, 'page', page);
+        // 정보 페이지로 이동할 때 검색 조건이 유지되도록 추가
+        url += '&age=' + age + '&status=' + status + '&searchString=' + searchString;
+    }
+
+    window.location.href = url;
+}
+
+
+function modifyURL(url, key, value) {
+    var urlParts = url.split('?');
+    if (urlParts.length >= 2) {
+        var queryParams = urlParts[1].split('&');
+        var found = false;
+        for (var i = 0; i < queryParams.length; i++) {
+            var keyValuePair = queryParams[i].split('=');
+            if (keyValuePair[0] === key) {
+                keyValuePair[1] = value;
+                queryParams[i] = keyValuePair.join('=');
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            queryParams.push(key + '=' + value);
+        }
+        urlParts[1] = queryParams.join('&');
+    } else {
+        urlParts.push(key + '=' + value);
+    }
+    return urlParts.join('?');
+}
+// JavaScript 코드를 여기에 직접 포함시키거나 외부 파일로 분리하여 링크할 수 있습니다.
+function changeActive(activeId) {
+        // 모든 링크의 'active' 클래스 제거
+        document.querySelectorAll('.sort a').forEach(link => {
+            link.classList.remove('active');
+        });
+
+        // 선택된 링크에 'active' 클래스 추가
+        document.getElementById(activeId).classList.add('active');
+    }
+
+    function sortByDefault() {
+        sendSortRequest('default');
+    }
+
+    function sortByViewCount() {
+        sendSortRequest('view_count');
+    }
+
+    function sendSortRequest(sortType) {
+        fetch('/sort_items', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `sort_by=${sortType}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            updateItems(data.items);
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function updateItems(items) {
+        const toyList = document.querySelector('.__toyList');
+        toyList.innerHTML = ''; // 기존 아이템들을 삭제
+        items.forEach(item => {
+            toyList.innerHTML += `
+                <a href="${item['detail_url']}" class="box" onclick="increaseViewCount('${item['idx']}')">
+                    <div class="img"><img src="${item['img_src']}" width="120" height="120"></div>
+                    <div class="info">
+                        <div>
+                            <span class="subject">${item['name']}</span>
+                            <span class="age">${item['age']}</span>
+                        </div>
+                        <div class="state">
+                            ${item['status'] === '대여가능' ? '<span class="__btn6 blue2">' : '<span class="__btn6 gray2">'}${item['status']}</span>
+                        </div>
+                    </div>
+                </a>`;
+        });
+    }
+</script>
+</body>
+</html>
